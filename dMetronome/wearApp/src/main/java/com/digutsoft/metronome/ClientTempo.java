@@ -45,7 +45,7 @@ public class ClientTempo extends Fragment {
         final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
         final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
         final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
-        final Triangle triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
+        final CircledImageView triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
         // make all the things from host invisible
         btStart.setVisibility(View.GONE);
         btPlus.setVisibility(View.GONE);
@@ -67,6 +67,9 @@ public class ClientTempo extends Fragment {
         Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         metronome = new DMCMetronome(getActivity(), vibrator, rootView.findViewById(R.id.bilBackground));
 
+
+
+
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         //wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getString(R.string.app_name));
 
@@ -76,12 +79,31 @@ public class ClientTempo extends Fragment {
         // One hacky way I thought of doing it is making the StartActivity path passed by the message
         // actually hold the info of the tempo and offset value we need.
         // You probably have a better idea but you are sleeping now :)
-        getMessage();
 
-        // start the metronome at the tempo and offset specified (offset will be implemented)
-        metronome.startTick(mTempo);
-        // set the text to the tempo mark
-        tvTempo.setText(Integer.toString(mTempo));
+
+        //tempo start was here
+        triangle.setOnClickListener(new View.OnClickListener() {
+            boolean on = false;
+            @Override
+            public void onClick(View view) {
+                if (!on){
+                    on = true;
+                    getMessage();
+                    // start the metronome at the tempo and offset specified (offset will be implemented)
+                    metronome.startTick(mTempo);
+                    // set the text to the tempo mark
+                    tvTempo.setText(Integer.toString(mTempo));
+
+                }
+                else if(on) {
+                    on = false;
+                    metronome.stopTick();
+
+                }
+
+
+            }
+        });
 
         return rootView;
     }

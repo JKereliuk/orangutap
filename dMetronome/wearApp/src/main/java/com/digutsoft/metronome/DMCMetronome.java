@@ -29,6 +29,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.support.wearable.view.CircledImageView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -116,11 +117,13 @@ public class DMCMetronome {
         }
     }
 
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message message) {
             mCount++;
             tick();
             mTvTempo.setText(Integer.toString(mCount + 1));
+            //maybe do rotation animations here
         }
     };
 }

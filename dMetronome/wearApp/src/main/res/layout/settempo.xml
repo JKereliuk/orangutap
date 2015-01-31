@@ -48,7 +48,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="0dp"
             android:orientation="horizontal"
             android:gravity="center">
 
@@ -57,9 +57,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:src="@drawable/triangle"
-                app:circle_radius="30dp"
-                app:circle_radius_pressed="30dp" />
+                android:src="@drawable/purpletriangle"
+                app:circle_radius="200dp"
+                app:circle_radius_pressed="200dp"
+                />
 
         </LinearLayout>
 
