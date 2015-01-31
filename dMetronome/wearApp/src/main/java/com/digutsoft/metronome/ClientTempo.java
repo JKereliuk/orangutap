@@ -11,6 +11,7 @@ import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.CircledImageView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,22 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ClientTempo extends Fragment {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.Wearable;
+
+import java.sql.Time;
+
+public class ClientTempo extends Fragment implements
+        DataApi.DataListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     View rootView;
     DMCMetronome metronome;
@@ -28,11 +44,15 @@ public class ClientTempo extends Fragment {
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
     int mTempo;
-    int offset;
+    Time mStartTime;
     Context mContext;
     PowerManager.WakeLock wakeLock;
     // Client variable that will be set somewhere
     boolean isClient = true;
+    private GoogleApiClient mGoogleApiClient;
+
+    private static final String BPM_KEY = "com.example.key.BPM";
+    private static final String TIME_KEY = "com.example.key.TIME";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +71,12 @@ public class ClientTempo extends Fragment {
         btPlus.setVisibility(View.GONE);
         btMinus.setVisibility(View.GONE);
         sbTempo.setVisibility(View.GONE);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         Intent viewIntent = new Intent(getActivity(), DMAMain.class);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(getActivity(), 0, viewIntent, 0);
@@ -80,37 +106,20 @@ public class ClientTempo extends Fragment {
         // actually hold the info of the tempo and offset value we need.
         // You probably have a better idea but you are sleeping now :)
 
+        updateTempo(0l, 150);
+        // start the metronome at the tempo and offset specified (offset will be implemented)
+        metronome.startTick(mTempo);
+        // set the text to the tempo mark
+        tvTempo.setText(Integer.toString(mTempo));
 
-        //tempo start was here
-        triangle.setOnClickListener(new View.OnClickListener() {
-            boolean on = false;
-            @Override
-            public void onClick(View view) {
-                if (!on){
-                    on = true;
-                    getMessage();
-                    // start the metronome at the tempo and offset specified (offset will be implemented)
-                    metronome.startTick(mTempo);
-                    // set the text to the tempo mark
-                    tvTempo.setText(Integer.toString(mTempo));
-
-                }
-                else if(on) {
-                    on = false;
-                    metronome.stopTick();
-
-                }
-
-
-            }
-        });
+        Toast.makeText(getActivity(), "JUST A TOAST", Toast.LENGTH_LONG).show();
 
         return rootView;
     }
 
-    public void getMessage() {
-        setTempo(150);
-        offset = 3;
+    public void updateTempo(Long startTime, int tempo) {
+        setTempo(tempo);
+        mStartTime = new Time(startTime);
     }
 
     public void onDestroy() {
@@ -125,5 +134,57 @@ public class ClientTempo extends Fragment {
         if (tempo < 0 || tempo > 240) return;
         tvTempo.setText(Integer.toString(tempo));
         mTempo = tempo;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
+
+        Log.v("myTag", "Connected to phone");
+
+        Toast.makeText(getActivity(), "Connected to Phone", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        super.onPause();
+        Wearable.DataApi.removeListener(mGoogleApiClient, this);
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEvents) {
+
+        Log.v("myTag", "connection success");
+
+        for (DataEvent event : dataEvents) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                // DataItem changed
+                DataItem item = event.getDataItem();
+                if (item.getUri().getPath().compareTo("/bpm") == 0) {
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    updateTempo(dataMap.getLong(TIME_KEY), dataMap.getInt(BPM_KEY));
+                }
+            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+                // DataItem deleted
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.v("myTag", "connection failed");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
     }
 }
