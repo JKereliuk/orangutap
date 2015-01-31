@@ -22,6 +22,7 @@ public class DMCMetronome {
     Vibrator mVibrator;
     SharedPreferences mSharedPreferences;
     boolean quietMode = false;
+    boolean started = false;
 
     View mBackground;
     TextView mTvTempo;
@@ -32,7 +33,7 @@ public class DMCMetronome {
     long mTickDuration;
     boolean isFlashEnabled, alwaysOnStatus;
     // set this somwhere
-    boolean isClient;
+    boolean isClient = true;
 
     Context mContext;
 
@@ -46,7 +47,7 @@ public class DMCMetronome {
     }
 
     public void startTick(int ticksPerSec) {
-        if(quietMode) {
+        if(quietMode && started) {
             quietMode = false;
         }else {
             mRunning = true;
