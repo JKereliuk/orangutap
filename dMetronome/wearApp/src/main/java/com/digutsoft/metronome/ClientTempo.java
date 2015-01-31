@@ -1,6 +1,5 @@
 package com.digutsoft.metronome;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -43,8 +42,8 @@ public class ClientTempo extends Fragment implements
     SeekBar sbTempo;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
-    int mTempo;
-    Time mStartTime;
+    int mBpm;
+    long mStartTime;
     Context mContext;
     PowerManager.WakeLock wakeLock;
     // Client variable that will be set somewhere
@@ -61,7 +60,7 @@ public class ClientTempo extends Fragment implements
 
         tvTempo = (TextView) rootView.findViewById(R.id.tvTempoClient);
         sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);
-        
+
         final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
         final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
         final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
@@ -93,8 +92,8 @@ public class ClientTempo extends Fragment implements
         Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         metronome = new DMCMetronome(getActivity(), vibrator, rootView.findViewById(R.id.bilBackground));
 
-
-
+        mBpm = 150;
+        mStartTime = 0;
 
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         //wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getString(R.string.app_name));
@@ -106,11 +105,26 @@ public class ClientTempo extends Fragment implements
         // actually hold the info of the tempo and offset value we need.
         // You probably have a better idea but you are sleeping now :)
 
-        updateTempo(0l, 150);
-        // start the metronome at the tempo and offset specified (offset will be implemented)
-        metronome.startTick(mTempo);
-        // set the text to the tempo mark
-        tvTempo.setText(Integer.toString(mTempo));
+        //tempo start was here
+        triangle.setOnClickListener(new View.OnClickListener() {
+            boolean on = false;
+            @Override
+            public void onClick(View view) {
+                if (!on){
+                    on = true;
+                    tvTempo.setText(Integer.toString(mBpm));
+                    // start the metronome at the tempo and offset specified (offset will be implemented)
+                    metronome.startTick(mBpm);
+                    // set the text to the tempo mark
+                    tvTempo.setText(Integer.toString(mBpm));
+
+                }
+                else {
+                    on = false;
+                    metronome.stopTick();
+                }
+            }
+        });
 
         Toast.makeText(getActivity(), "JUST A TOAST", Toast.LENGTH_LONG).show();
 
@@ -119,7 +133,7 @@ public class ClientTempo extends Fragment implements
 
     public void updateTempo(Long startTime, int tempo) {
         setTempo(tempo);
-        mStartTime = new Time(startTime);
+        mStartTime = startTime;
     }
 
     public void onDestroy() {
@@ -133,7 +147,7 @@ public class ClientTempo extends Fragment implements
         //we changed tempo max to 240
         if (tempo < 0 || tempo > 240) return;
         tvTempo.setText(Integer.toString(tempo));
-        mTempo = tempo;
+        mBpm = tempo;
     }
 
     @Override
