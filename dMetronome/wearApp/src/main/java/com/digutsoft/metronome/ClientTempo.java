@@ -39,7 +39,7 @@ public class ClientTempo extends Fragament {
 
         rootView = inflater.inflate(R.layout.settempo, container, false);
 
-        tvTempo = (TextView) rootView.findViewById(R.id.tvTempo);
+        tvTempo = (TextView) rootView.findViewById(R.id.tvTempoClient);
         
         Intent viewIntent = new Intent(getActivity(), DMAMain.class);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(getActivity(), 0, viewIntent, 0);
