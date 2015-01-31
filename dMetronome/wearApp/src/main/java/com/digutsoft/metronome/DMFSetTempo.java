@@ -63,7 +63,7 @@ public class DMFSetTempo extends Fragment {
 
         mContext = getActivity().getApplicationContext();
 
-        setTempo(80);
+        setTempo(120);
 
         Intent viewIntent = new Intent(getActivity(), DMAMain.class);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(getActivity(), 0, viewIntent, 0);
@@ -105,6 +105,7 @@ public class DMFSetTempo extends Fragment {
                     return;
                 }
 
+                //If it's running stop it, enable it, put tempo back on string, put image, and put arrow keys to visable
                 if (DMCMetronome.mRunning) {
                     metronome.stopTick();
 
@@ -119,6 +120,7 @@ public class DMFSetTempo extends Fragment {
 
                     notificationManager.cancel(1);
                 } else {
+                    //if not running start the tick, change visibility and stuff
                     metronome.startTick(mTempo);
 
                     sbTempo.setEnabled(false);
@@ -161,7 +163,8 @@ public class DMFSetTempo extends Fragment {
     }
 
     private void setTempo(int tempo) {
-        if (tempo < 0 || tempo > 200) return;
+        //we changed tempo max to 240
+        if (tempo < 0 || tempo > 240) return;
         tvTempo.setText(Integer.toString(tempo));
         sbTempo.setProgress(tempo);
         mTempo = tempo;

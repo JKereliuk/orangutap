@@ -61,6 +61,7 @@ public class DMFPreference extends Fragment {
 
         WearableListView prefListView = (WearableListView) rootView.findViewById(R.id.wlPreferenceList);
         prefListView.setGreedyTouchMode(true);
+        //populate list
         prefListView.setAdapter(new DMCPrefListViewAdapter(mContext));
         prefListView.setClickListener(new WearableListView.ClickListener() {
             @Override
@@ -108,6 +109,7 @@ public class DMFPreference extends Fragment {
         tvPrefSubTitle.setText(Integer.toString(currentSetting));
     }
 
+    //probably get rid of always on
     private void prefChangeAlwaysOnStatus(WearableListView.ViewHolder viewHolder) {
         boolean currentSetting = sharedPreferences.getBoolean("alwaysOn", false);
         sharedPreferences.edit().putBoolean("alwaysOn", !currentSetting).apply();
@@ -161,6 +163,6 @@ public class DMFPreference extends Fragment {
         @Override
         public int getItemCount() {
             return 3;
-        }
+        } //not sure???
     }
 }

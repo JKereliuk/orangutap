@@ -65,6 +65,7 @@ public class DMCMetronome {
     public void startTick(int ticksPerSec) {
         mRunning = true;
         mCount = 0;
+        //mPeriod is count default set to 4
         mPeriod = mSharedPreferences.getInt("count", 4);
         isFlashEnabled = mSharedPreferences.getBoolean("flash", true);
         alwaysOnStatus = mSharedPreferences.getBoolean("alwaysOn", false);
@@ -73,21 +74,23 @@ public class DMCMetronome {
         if (alwaysOnStatus) {
             ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-
+        //RENAME THIS tick duration represents the delay on the tick
         mTickDuration = 60000 / ticksPerSec;
+        //call tick when you start tick
         tick();
     }
 
     private void tick() {
         if (!mRunning) return;
 
-        if ((mPeriod != 1) && (mCount % mPeriod == 0)) {
+        //mPeriod is count not sure why we need != 1
+        if (mCount - mPeriod == 0) {
             mCount = 0;
             if (isFlashEnabled) {
                 mBackground.setBackgroundColor(Color.parseColor("#000000"));
                 mTvTempo.setTextColor(Color.parseColor("#ffffff"));
             }
-            mVibrator.vibrate(200);
+            mVibrator.vibrate(120);
         } else {
             if (isFlashEnabled) {
                 mBackground.setBackground(mDefaultBackground);
@@ -96,6 +99,7 @@ public class DMCMetronome {
             mVibrator.vibrate(100);
         }
 
+        //calls the Handler with the delay of mTickDuration for example 60000 / 60bpm = a tick every 1 second
         mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG), mTickDuration);
     }
 
@@ -104,6 +108,7 @@ public class DMCMetronome {
         mCount = 0;
         mBackground.setBackground(mDefaultBackground);
         mTvTempo.setTextColor(Color.parseColor("#000000"));
+        //I think removeMessages means make MSG 0 or something???
         mHandler.removeMessages(MSG);
 
         if (alwaysOnStatus) {

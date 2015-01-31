@@ -33,15 +33,15 @@ public class DMCGridPagerAdapter extends FragmentGridPagerAdapter {
     @Override
     public int getRowCount() {
         return 1;
-    }
+    } //dunno why these exist
 
     @Override
     public int getColumnCount(int i) {
         return 2;
-    }
+    } //same as above
 
     @Override
-    public Fragment getFragment(int row, int col) {
+    public Fragment getFragment(int row, int col) { //row never used
         switch(col) {
             case 0:
                 return new DMFSetTempo();
