@@ -97,7 +97,7 @@ public class DMCMetronome {
     }
 
     // override the quiet mode and actually exit
-    public void stopTick(true) {
+    public void stopTick(boolean force) {
             mRunning = false;
             mCount = 0;
             mBackground.setBackground(mDefaultBackground);
