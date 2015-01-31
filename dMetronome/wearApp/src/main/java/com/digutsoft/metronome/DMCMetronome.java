@@ -82,11 +82,13 @@ public class DMCMetronome {
                     mVibrator.vibrate(120);
                 }
                 else {
-                    if (isFlashEnabled) {
-                        mBackground.setBackground(mDefaultBackground);
-                        mTvTempo.setTextColor(Color.parseColor("#000000"));
+                    if(!quietMode) {
+                        if (isFlashEnabled) {
+                            mBackground.setBackground(mDefaultBackground);
+                            mTvTempo.setTextColor(Color.parseColor("#000000"));
+                        }
+                        mVibrator.vibrate(100);
                     }
-                    mVibrator.vibrate(100);
                 }
             }
 
@@ -94,6 +96,19 @@ public class DMCMetronome {
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG), mTickDuration);
     }
 
+    // override the quiet mode and actually exit
+    public void stopTick(true) {
+            mRunning = false;
+            mCount = 0;
+            mBackground.setBackground(mDefaultBackground);
+            mTvTempo.setTextColor(Color.parseColor("#000000"));
+            //I think removeMessages means make MSG 0 or something???
+            mHandler.removeMessages(MSG);
+
+            if (alwaysOnStatus) {
+                ((Activity) mContext).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+    }
     public void stopTick() {
         if(isClient) {
             quietMode = true;
