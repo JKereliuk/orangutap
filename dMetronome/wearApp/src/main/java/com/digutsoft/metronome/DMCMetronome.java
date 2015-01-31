@@ -47,21 +47,26 @@ public class DMCMetronome {
     }
 
     public void startTick(int ticksPerSec) {
-        mRunning = true;
-        mCount = 0;
-        //mPeriod is count default set to 4
-        mPeriod = mSharedPreferences.getInt("count", 4);
-        isFlashEnabled = mSharedPreferences.getBoolean("flash", true);
-        alwaysOnStatus = mSharedPreferences.getBoolean("alwaysOn", false);
-        mTvTempo.setText(Integer.toString(1));
+        if(quietMode && started) {
+            quietMode = false;
+        }else {
+            started = true;
+            mRunning = true;
+            mCount = 0;
+            //mPeriod is count default set to 4
+            mPeriod = mSharedPreferences.getInt("count", 4);
+            isFlashEnabled = mSharedPreferences.getBoolean("flash", true);
+            alwaysOnStatus = mSharedPreferences.getBoolean("alwaysOn", false);
+            mTvTempo.setText(Integer.toString(1));
 
-        if (alwaysOnStatus) {
-            ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            if (alwaysOnStatus) {
+                ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+            //RENAME THIS tick duration represents the delay on the tick
+            mTickDuration = 60000 / ticksPerSec;
+            //call tick when you start tick
+            tick();
         }
-        //RENAME THIS tick duration represents the delay on the tick
-        mTickDuration = 60000 / ticksPerSec;
-        //call tick when you start tick
-        tick();
     }
 
     private void tick() {
@@ -71,19 +76,10 @@ public class DMCMetronome {
             if (mCount - mPeriod == 0) {
                 mCount = 0;
                 if(!quietMode) {
-                    if (isFlashEnabled) {
-                        mBackground.setBackgroundColor(Color.parseColor("#000000"));
-                        mTvTempo.setTextColor(Color.parseColor("#ffffff"));
-                    }
                     mVibrator.vibrate(120);
                 }
                 else {
-                    if(!quietMode) {
-                        if (isFlashEnabled) {
-                            mBackground.setBackground(mDefaultBackground);
-                            mTvTempo.setTextColor(Color.parseColor("#000000"));
-                        }
-                        mVibrator.vibrate(100);
+                    mVibrator.vibrate(100);
                     }
                 }
             }
