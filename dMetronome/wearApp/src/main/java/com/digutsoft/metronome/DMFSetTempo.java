@@ -1,23 +1,3 @@
-/*
- *
- * Copyright (c) 2014 Digutsoft.
- * http://www.digutsoft.com/
- *
- * This file is part of dMetronome.
- * Visit http://www.digutsoft.com/apps/product.php?id=metronome to know more.
- *
- * dMetronome is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * It is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- */
-
 package com.digutsoft.metronome;
 
 import android.app.Activity;
@@ -50,9 +30,12 @@ public class DMFSetTempo extends Fragment {
     int mTempo;
     Context mContext;
     PowerManager.WakeLock wakeLock;
+    // Client variable that will be set somewhere
+    boolean isClient = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         rootView = inflater.inflate(R.layout.settempo, container, false);
 
         sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);

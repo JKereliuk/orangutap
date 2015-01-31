@@ -40,6 +40,8 @@ public class DMCGridPagerAdapter extends FragmentGridPagerAdapter {
         return 2;
     } //same as above
 
+    // This is where we should probably check if the client vairable is true
+    // We can then force what fragments exist
     @Override
     public Fragment getFragment(int row, int col) { //row never used
         switch(col) {
@@ -47,6 +49,8 @@ public class DMCGridPagerAdapter extends FragmentGridPagerAdapter {
                 return new DMFSetTempo();
             case 1:
                 return new DMFPreference();
+            case 2:
+                return new ClientTempo();
             default:
                 return null;
         }
