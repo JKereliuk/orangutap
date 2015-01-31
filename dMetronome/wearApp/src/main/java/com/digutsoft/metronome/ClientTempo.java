@@ -138,7 +138,7 @@ public class ClientTempo extends Fragment implements
 
     public void onDestroy() {
         super.onDestroy();
-        metronome.stopTick(true);
+        metronome.stopTick();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         notificationManager.cancel(1);
     }

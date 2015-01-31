@@ -47,9 +47,6 @@ public class DMCMetronome {
     }
 
     public void startTick(int ticksPerSec) {
-        if(quietMode && started) {
-            quietMode = false;
-        }else {
             started = true;
             mRunning = true;
             mCount = 0;
@@ -66,7 +63,6 @@ public class DMCMetronome {
             mTickDuration = 60000 / ticksPerSec;
             //call tick when you start tick
             tick();
-        }
     }
 
     private void tick() {
@@ -75,14 +71,20 @@ public class DMCMetronome {
             //mPeriod is count not sure why we need != 1
             if (mCount - mPeriod == 0) {
                 mCount = 0;
-                if(!quietMode) {
+                if(isFlashEnabled) {
+                    mBackground.setBackgroundColor(Color.parseColor("#000000"));
+                    mTvTempo.setTextColor(Color.parseColor("#ffffff"));
+                }
                     mVibrator.vibrate(120);
                 }
                 else {
+                if(isFlashEnabled) {
+                    mBackground.setBackground(mDefaultBackground);
+                    mTvTempo.setTextColor(Color.parseColor("#ffffff"));
+                }
                     mVibrator.vibrate(100);
                     }
-                }
-            }
+
 
             //calls the Handler with the delay of mTickDuration for example 60000 / 60bpm = a tick every 1 second
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG), mTickDuration);
@@ -102,10 +104,6 @@ public class DMCMetronome {
             }
     }
     public void stopTick() {
-        if(isClient) {
-            quietMode = true;
-        }
-        else {
             mRunning = false;
             mCount = 0;
             mBackground.setBackground(mDefaultBackground);
@@ -116,10 +114,6 @@ public class DMCMetronome {
             if (alwaysOnStatus) {
                 ((Activity) mContext).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
-        }
-    }
-    public boolean getQuietMode() {
-        return quietMode;
     }
 
 
