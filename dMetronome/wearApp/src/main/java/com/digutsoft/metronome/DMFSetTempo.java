@@ -43,6 +43,9 @@ public class DMFSetTempo extends Fragment {
         final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
         final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
         final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
+        final Triangle triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
+        // set the Triangle invisible
+        triangle.setVisibility(View.GONE);
 
         mContext = getActivity().getApplicationContext();
 

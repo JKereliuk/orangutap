@@ -45,6 +45,23 @@
                 />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <android.support.wearable.view.CircledImageView
+                android:id="@+id/Triangle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:src="@drawable/triangle"
+                app:circle_radius="30dp"
+                app:circle_radius_pressed="30dp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -79,6 +96,7 @@
                 android:src="@drawable/ic_plus"
                 app:circle_radius="30dp"
                 app:circle_radius_pressed="30dp" />
+
         </LinearLayout>
 
     </LinearLayout>

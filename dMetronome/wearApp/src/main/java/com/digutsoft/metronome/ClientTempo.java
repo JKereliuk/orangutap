@@ -40,7 +40,18 @@ public class ClientTempo extends Fragment {
         rootView = inflater.inflate(R.layout.settempo, container, false);
 
         tvTempo = (TextView) rootView.findViewById(R.id.tvTempoClient);
+        sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);
         
+        final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
+        final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
+        final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
+        final Triangle triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
+        // make all the things from host invisible
+        btStart.setVisibility(View.GONE);
+        btPlus.setVisibility(View.GONE);
+        btMinus.setVisibility(View.GONE);
+        sbTempo.setVisibility(View.GONE);
+
         Intent viewIntent = new Intent(getActivity(), DMAMain.class);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(getActivity(), 0, viewIntent, 0);
 
