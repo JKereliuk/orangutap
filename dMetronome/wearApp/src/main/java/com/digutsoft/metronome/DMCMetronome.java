@@ -46,22 +46,25 @@ public class DMCMetronome {
     }
 
     public void startTick(int ticksPerSec) {
-        quietMode = false;
-        mRunning = true;
-        mCount = 0;
-        //mPeriod is count default set to 4
-        mPeriod = mSharedPreferences.getInt("count", 4);
-        isFlashEnabled = mSharedPreferences.getBoolean("flash", true);
-        alwaysOnStatus = mSharedPreferences.getBoolean("alwaysOn", false);
-        mTvTempo.setText(Integer.toString(1));
+        if(quietMode) {
+            quietMode = false;
+        }else {
+            mRunning = true;
+            mCount = 0;
+            //mPeriod is count default set to 4
+            mPeriod = mSharedPreferences.getInt("count", 4);
+            isFlashEnabled = mSharedPreferences.getBoolean("flash", true);
+            alwaysOnStatus = mSharedPreferences.getBoolean("alwaysOn", false);
+            mTvTempo.setText(Integer.toString(1));
 
-        if (alwaysOnStatus) {
-            ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            if (alwaysOnStatus) {
+                ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+            //RENAME THIS tick duration represents the delay on the tick
+            mTickDuration = 60000 / ticksPerSec;
+            //call tick when you start tick
+            tick();
         }
-        //RENAME THIS tick duration represents the delay on the tick
-        mTickDuration = 60000 / ticksPerSec;
-        //call tick when you start tick
-        tick();
     }
 
     private void tick() {
@@ -116,7 +119,9 @@ public class DMCMetronome {
         public void handleMessage(Message message) {
             mCount++;
             tick();
-            mTvTempo.setText(Integer.toString(mCount + 1));
+            if(!quietMode) {
+                mTvTempo.setText(Integer.toString(mCount + 1));
+            }
             //maybe do rotation animations here
         }
     };
