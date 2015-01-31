@@ -37,7 +37,7 @@ public class DMCGridPagerAdapter extends FragmentGridPagerAdapter {
 
     @Override
     public int getColumnCount(int i) {
-        return 2;
+        return 3;
     } //same as above
 
     // This is where we should probably check if the client vairable is true

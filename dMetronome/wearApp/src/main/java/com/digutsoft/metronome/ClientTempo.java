@@ -19,7 +19,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ClientTempo extends Fragament {
+public class ClientTempo extends Fragment {
 
     View rootView;
     DMCMetronome metronome;
@@ -49,7 +49,7 @@ public class ClientTempo extends Fragament {
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentIntent(viewPendingIntent);
-
+        mContext = getActivity().getApplicationContext();
 
         notificationManager = NotificationManagerCompat.from(getActivity());
 
@@ -68,7 +68,7 @@ public class ClientTempo extends Fragament {
         getMessage();
 
         // start the metronome at the tempo and offset specified (offset will be implemented)
-        metronome.startTick();
+        metronome.startTick(mTempo);
         // set the text to the tempo mark
         tvTempo.setText(Integer.toString(mTempo));
 
@@ -83,7 +83,6 @@ public class ClientTempo extends Fragament {
     public void onDestroy() {
         super.onDestroy();
         metronome.stopTick();
-        if (wakeLock.isHeld()) wakeLock.release();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         notificationManager.cancel(1);
     }
