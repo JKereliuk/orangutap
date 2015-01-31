@@ -142,6 +142,12 @@ public class DMFSetTempo extends Fragment {
         return rootView;
     }
 
+
+    public void tapTime() {
+
+    }
+
+
     public void onDestroy() {
         super.onDestroy();
         metronome.stopTick();

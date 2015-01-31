@@ -131,9 +131,18 @@ public class ClientTempo extends Fragment implements
         return rootView;
     }
 
+
     public void updateTempo(Long startTime, int tempo) {
         setTempo(tempo);
+//        metronome.stopTick();
         mStartTime = startTime;
+//
+//        while(true) {
+//            if((System.currentTimeMillis() - startTime) % (tempo * 1000 / 60) == 0) {
+//                metronome.startTick(tempo);
+//            }
+//        }
+
     }
 
     public void onDestroy() {
