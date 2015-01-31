@@ -91,7 +91,7 @@ public class DMCMetronome {
     }
 
     public void stopTick() {
-        if(clientMode) {
+        if(isClient) {
             quietMode = true;
         }
         else {
