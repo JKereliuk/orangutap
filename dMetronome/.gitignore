@@ -1,0 +1,10 @@
+.gradle
+/local.properties
+/.idea/workspace.xml
+.DS_Store
+.idea/
+build/
+dMetronome.iml
+handheldApp/manifest-merger-release-report.txt
+handheldApp/handheldApp-release.apk
+handheldApp/wearApp-release.apk
