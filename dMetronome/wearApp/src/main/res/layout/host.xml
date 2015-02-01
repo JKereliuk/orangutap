@@ -7,17 +7,26 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <android.support.wearable.view.CircledImageView
-        android:id="@+id/Miley"
-        android:layout_width="200dp"
-        android:layout_height="300dp"
-        android:layout_weight="2"
-        android:src="@drawable/miley"
-        app:circle_radius="70dp"
-        app:circle_radius_pressed="100dp" />
+    <!--<android.support.wearable.view.CircledImageView-->
+        <!--android:id="@+id/Miley"-->
+        <!--android:layout_width="150dp"-->
+        <!--android:layout_height="300dp"-->
+        <!--android:layout_weight="2"-->
+        <!--android:src="@drawable/miley"-->
+        <!--app:circle_radius="70dp"-->
+        <!--app:circle_radius_pressed="100dp" />-->
 
     <TextView
         android:id="@+id/tvTempo"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
+    <TextView
+        android:id="@+id/TimeSig"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
@@ -33,6 +42,34 @@
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
         />
+
+
+
+
+    <android.support.wearable.view.CircledImageView
+        android:id="@+id/Miley"
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_weight="2"
+        android:src="@drawable/miley"
+        app:circle_radius="70dp"
+        app:circle_radius_pressed="100dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+
+    <android.support.wearable.view.CircledImageView
+        android:id="@+id/Reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:src="@drawable/reset"
+        app:circle_radius="15dp"
+        app:circle_radius_pressed="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+
 
 
 </RelativeLayout>

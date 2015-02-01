@@ -41,7 +41,6 @@ public class ClientTempo extends Fragment implements
     View rootView;
     DMCMetronome metronome;
     TextView tvTempo;
-    SeekBar sbTempo;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
     int mBpm;
@@ -69,17 +68,8 @@ public class ClientTempo extends Fragment implements
         rootView = inflater.inflate(R.layout.settempo, container, false);
 
         tvTempo = (TextView) rootView.findViewById(R.id.tvTempoClient);
-        sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);
 
-        final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
-        final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
-        final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
         final CircledImageView triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
-        // make all the things from host invisible
-        btStart.setVisibility(View.GONE);
-        btPlus.setVisibility(View.GONE);
-        btMinus.setVisibility(View.GONE);
-        sbTempo.setVisibility(View.GONE);
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Wearable.API)

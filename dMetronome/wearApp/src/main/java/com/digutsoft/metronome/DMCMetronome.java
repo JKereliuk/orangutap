@@ -21,8 +21,6 @@ public class DMCMetronome {
 
     Vibrator mVibrator;
     SharedPreferences mSharedPreferences;
-    boolean quietMode = false;
-    boolean started = false;
 
     View mBackground;
     TextView mTvTempo;
@@ -51,7 +49,7 @@ public class DMCMetronome {
     }
 
     public void startTick(int ticksPerSec) {
-            started = true;
+
             mRunning = true;
             mCount = 0;
             //mPeriod is count default set to 4
@@ -125,9 +123,8 @@ public class DMCMetronome {
         public void handleMessage(Message message) {
             mCount++;
             tick();
-            if(!quietMode) {
-                mTvTempo.setText(Integer.toString(mCount + 1));
-            }
+            mTvTempo.setText(Integer.toString(mCount + 1));
+
             //maybe do rotation animations here
         }
     };

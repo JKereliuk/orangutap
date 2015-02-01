@@ -38,7 +38,7 @@ public class DMFSetTempo extends Fragment {
     Context mContext;
     PowerManager.WakeLock wakeLock;
     // Client variable that will be set somewhere
-    boolean timeTapped = false;
+
     SharedPreferences sharedPreferences;
 
     @Override
@@ -46,12 +46,7 @@ public class DMFSetTempo extends Fragment {
 
         rootView = inflater.inflate(R.layout.host, container, false);
 
-//        sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);
-//        tvTempo = (TextView) rootView.findViewById(R.id.tvTempo);
-//        final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
-//        final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
-//        final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
-//        final CircledImageView triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
+        CircledImageView reset = (CircledImageView) rootView.findViewById(R.id.Reset);
         final CircledImageView miley = (CircledImageView) rootView.findViewById(R.id.Miley);
         // set the Triangle invisible
 //        triangle.setVisibility(View.GONE);
@@ -112,11 +107,16 @@ public class DMFSetTempo extends Fragment {
                     tapCount = 5;
                     metronome.startTick(mTempo);
                 }
-
-
-
             }
         });
+
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onDestroy();
+            }
+        });
+
 
 
 
@@ -194,38 +194,11 @@ public class DMFSetTempo extends Fragment {
     }
 
 
-    public void tapTime(CircledImageView button) {
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("Ya");
-                if(tapCount == 0) {
-                    lastTap = System.currentTimeMillis();
-                }
-                else if(tapCount < 4) {
-                    currentTime = System.currentTimeMillis();
-                    timeTotal += currentTime - lastTap;
-                    tapCount++;
-                    lastTap = currentTime;
-                }
-                else if(tapCount == 4) {
-                    currentTime = System.currentTimeMillis();
-                    timeTotal += currentTime - lastTap;
-                    lastTap = currentTime;
-                    Integer total = (int) (long) timeTotal;
-                    setTempo(total/300);
-                }
-
-            }
-        });
-    }
-
-
     public void onDestroy() {
         super.onDestroy();
         metronome.stopTick();
-        timeTapped = false;
         tapCount = 0;
+        timeTotal = 0;
 
         if (wakeLock.isHeld()) wakeLock.release();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
