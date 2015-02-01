@@ -6,8 +6,6 @@ import android.support.wearable.view.GridViewPager;
 
 public class DMAMain extends Activity {
 
-    static public boolean isClient = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -15,5 +13,6 @@ public class DMAMain extends Activity {
 
         final GridViewPager gridViewPager = (GridViewPager)findViewById(R.id.gvpMain);
         gridViewPager.setAdapter(new DMCGridPagerAdapter(getFragmentManager()));
+        getFragmentManager();
     }
 }

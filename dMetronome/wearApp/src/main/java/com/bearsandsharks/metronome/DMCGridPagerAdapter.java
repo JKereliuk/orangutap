@@ -24,11 +24,9 @@ public class DMCGridPagerAdapter extends FragmentGridPagerAdapter {
     // We can then force what fragments exist
     @Override
     public Fragment getFragment(int row, int col) {
-        if(DMAMain.isClient) {
-            return new ClientTempo();
-        }else {
+
             return new DMFSetTempo();
-        }
+
 //        switch(col) {
 //            case 0:
 //                return new DMFSetTempo();

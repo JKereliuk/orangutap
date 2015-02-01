@@ -119,6 +119,7 @@ public class DMFSetTempo extends Fragment
         miley.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                run_client();
 
                 if(tapCount == 0) {
                     lastTap = System.currentTimeMillis();
@@ -252,5 +253,11 @@ public class DMFSetTempo extends Fragment
     public void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
+    }
+
+
+    public Fragment run_client() {
+        DMCMetronome.isClient = true;
+        return new ClientTempo();
     }
 }
