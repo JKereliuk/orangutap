@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
@@ -18,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.Circle;
 
@@ -25,31 +27,40 @@ public class DMFSetTempo extends Fragment {
 
     View rootView;
     DMCMetronome metronome;
+    SharedPreferences mSharedPreferences;
     TextView tvTempo;
     SeekBar sbTempo;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
-    int mTempo;
+    int mTempo, mPeriod;
+    int tapCount;
+    long timeTotal, lastTap, currentTime;
     Context mContext;
     PowerManager.WakeLock wakeLock;
     // Client variable that will be set somewhere
-    boolean isClient = true;
+    boolean timeTapped = false;
+    SharedPreferences sharedPreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.settempo, container, false);
+        rootView = inflater.inflate(R.layout.host, container, false);
 
-        sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);
-        tvTempo = (TextView) rootView.findViewById(R.id.tvTempo);
-        final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
-        final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
-        final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
-        final CircledImageView triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
+//        sbTempo = (SeekBar) rootView.findViewById(R.id.sbTempo);
+//        tvTempo = (TextView) rootView.findViewById(R.id.tvTempo);
+//        final CircledImageView btStart = (CircledImageView) rootView.findViewById(R.id.btStart);
+//        final CircledImageView btPlus = (CircledImageView) rootView.findViewById(R.id.btPlus);
+//        final CircledImageView btMinus = (CircledImageView) rootView.findViewById(R.id.btMinus);
+//        final CircledImageView triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
+        final CircledImageView miley = (CircledImageView) rootView.findViewById(R.id.Miley);
         // set the Triangle invisible
-        triangle.setVisibility(View.GONE);
+//        triangle.setVisibility(View.GONE);
 
-        mContext = getActivity().getApplicationContext();
+        mContext = getActivity();
+        sharedPreferences = mContext.getSharedPreferences("dMetronome", 0);
+//        pref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mPeriod = sharedPreferences.getInt("count", 4);
+
 
         setTempo(120);
 
@@ -65,92 +76,157 @@ public class DMFSetTempo extends Fragment {
         notificationManager = NotificationManagerCompat.from(getActivity());
 
         Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+
         metronome = new DMCMetronome(getActivity(), vibrator, rootView.findViewById(R.id.bilBackground));
+//        mPeriod = metronome.getMPeriod();
+
 
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getString(R.string.app_name));
 
-        sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                setTempo(i);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        btStart.setOnClickListener(new View.OnClickListener() {
+        miley.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mTempo == 0) {
-                    Toast.makeText(getActivity(), R.string.tempo_zero, Toast.LENGTH_LONG).show();
-                    return;
+                System.out.println("Ya");
+                System.out.println(mPeriod);
+
+                if(tapCount == 0) {
+                    lastTap = System.currentTimeMillis();
+                    tapCount++;
                 }
-
-                //If it's running stop it, enable it, put tempo back on string, put image, and put arrow keys to visable
-                if (DMCMetronome.mRunning) {
-                    metronome.stopTick();
-
-                    sbTempo.setEnabled(true);
-                    tvTempo.setText(Integer.toString(mTempo));
-                    btStart.setImageDrawable(getResources().getDrawable(R.drawable.ic_start));
-                    btStart.setCircleColor(getResources().getColor(R.color.green));
-                    btPlus.setVisibility(View.VISIBLE);
-                    btMinus.setVisibility(View.VISIBLE);
-
-                    wakeLock.release();
-
-                    notificationManager.cancel(1);
-                } else {
-                    //if not running start the tick, change visibility and stuff
+                else if(tapCount < (mPeriod - 1)) {
+                    currentTime = System.currentTimeMillis();
+                    timeTotal += currentTime - lastTap;
+                    tapCount++;
+                    lastTap = currentTime;
+                }
+                else if(tapCount == mPeriod - 1) {
+                    currentTime = System.currentTimeMillis();
+                    timeTotal += currentTime - lastTap;
+                    lastTap = currentTime;
+                    System.out.println(timeTotal);
+                    System.out.println("HYZZZA");
+                    int total = (int) timeTotal;
+                    System.out.println(total);
+                    setTempo((60000 * (mPeriod - 1)) /total);
+                    tapCount = 5;
                     metronome.startTick(mTempo);
-
-                    sbTempo.setEnabled(false);
-                    btStart.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop));
-                    btStart.setCircleColor(getResources().getColor(R.color.red));
-                    btPlus.setVisibility(View.GONE);
-                    btMinus.setVisibility(View.GONE);
-
-                    wakeLock.acquire();
-
-                    notificationBuilder.setContentText(String.format(getString(R.string.notification_running), mTempo));
-                    notificationManager.notify(1, notificationBuilder.build());
                 }
+
+
+
             }
         });
 
-        btPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setTempo(mTempo + 1);
-            }
-        });
 
-        btMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setTempo(mTempo - 1);
-            }
-        });
+
+
+//        sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+//                setTempo(i);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//            }
+//        });
+
+//        btStart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (mTempo == 0) {
+//                    Toast.makeText(getActivity(), R.string.tempo_zero, Toast.LENGTH_LONG).show();
+//                    return;
+//                }
+//
+//                //If it's running stop it, enable it, put tempo back on string, put image, and put arrow keys to visable
+//                if (DMCMetronome.mRunning) {
+//                    metronome.stopTick();
+//
+//                    sbTempo.setEnabled(true);
+//                    tvTempo.setText(Integer.toString(mTempo));
+//                    btStart.setImageDrawable(getResources().getDrawable(R.drawable.ic_start));
+//                    btStart.setCircleColor(getResources().getColor(R.color.green));
+//                    btPlus.setVisibility(View.VISIBLE);
+//                    btMinus.setVisibility(View.VISIBLE);
+//
+//                    wakeLock.release();
+//
+//                    notificationManager.cancel(1);
+//                } else {
+//                    //if not running start the tick, change visibility and stuff
+//                    metronome.startTick(mTempo);
+//
+//                    sbTempo.setEnabled(false);
+//                    btStart.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop));
+//                    btStart.setCircleColor(getResources().getColor(R.color.red));
+//                    btPlus.setVisibility(View.GONE);
+//                    btMinus.setVisibility(View.GONE);
+//
+//                    wakeLock.acquire();
+//
+//                    notificationBuilder.setContentText(String.format(getString(R.string.notification_running), mTempo));
+//                    notificationManager.notify(1, notificationBuilder.build());
+//                }
+//            }
+//        });
+
+//        btPlus.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                setTempo(mTempo + 1);
+//            }
+//        });
+//
+//        btMinus.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                setTempo(mTempo - 1);
+//            }
+//        });
 
         return rootView;
     }
 
 
-    public void tapTime() {
+    public void tapTime(CircledImageView button) {
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Ya");
+                if(tapCount == 0) {
+                    lastTap = System.currentTimeMillis();
+                }
+                else if(tapCount < 4) {
+                    currentTime = System.currentTimeMillis();
+                    timeTotal += currentTime - lastTap;
+                    tapCount++;
+                    lastTap = currentTime;
+                }
+                else if(tapCount == 4) {
+                    currentTime = System.currentTimeMillis();
+                    timeTotal += currentTime - lastTap;
+                    lastTap = currentTime;
+                    Integer total = (int) (long) timeTotal;
+                    setTempo(total/300);
+                }
 
+            }
+        });
     }
 
 
     public void onDestroy() {
         super.onDestroy();
         metronome.stopTick();
+        timeTapped = false;
+        tapCount = 0;
+
         if (wakeLock.isHeld()) wakeLock.release();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         notificationManager.cancel(1);
@@ -158,9 +234,10 @@ public class DMFSetTempo extends Fragment {
 
     private void setTempo(int tempo) {
         //we changed tempo max to 240
-        if (tempo < 0 || tempo > 240) return;
-        tvTempo.setText(Integer.toString(tempo));
-        sbTempo.setProgress(tempo);
+        System.out.println(tempo);
+        if (tempo < 0 || tempo > 9999) return;
+//        tvTempo.setText(Integer.toString(tempo));
+//        sbTempo.setProgress(tempo);
         mTempo = tempo;
     }
 }

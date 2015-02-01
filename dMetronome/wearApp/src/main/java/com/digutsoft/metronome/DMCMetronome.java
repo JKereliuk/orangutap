@@ -46,6 +46,10 @@ public class DMCMetronome {
         mSharedPreferences = context.getSharedPreferences("dMetronome", 0);
     }
 
+    public int getMPeriod() {
+        return mPeriod;
+    }
+
     public void startTick(int ticksPerSec) {
             started = true;
             mRunning = true;
