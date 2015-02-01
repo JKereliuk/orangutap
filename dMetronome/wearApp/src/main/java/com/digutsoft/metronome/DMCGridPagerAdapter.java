@@ -13,26 +13,30 @@ public class DMCGridPagerAdapter extends FragmentGridPagerAdapter {
     @Override
     public int getRowCount() {
         return 1;
-    } //dunno why these exist
+    }
 
     @Override
     public int getColumnCount(int i) {
-        return 3;
-    } //same as above
+        return 1;
+    }
 
     // This is where we should probably check if the client vairable is true
     // We can then force what fragments exist
     @Override
-    public Fragment getFragment(int row, int col) { //row never used
-        switch(col) {
-            case 0:
-                return new DMFSetTempo();
-            case 1:
-                return new DMFPreference();
-            case 2:
-                return new ClientTempo();
-            default:
-                return null;
+    public Fragment getFragment(int row, int col) {
+        if(DMAMain.isClient) {
+            return new ClientTempo();
+        }else {
+            return new DMFSetTempo();
         }
+//        switch(col) {
+//            case 0:
+//                return new DMFSetTempo();
+//            case 1:
+//                return new DMFPreference();
+//            case 2:
+//                return new ClientTempo();
+//            default:
+//                return null;
     }
 }

@@ -44,7 +44,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:src="@drawable/miley"
+            android:src="@drawable/tap"
             app:circle_radius="150dp"
             app:circle_radius_pressed="150dp"
             />

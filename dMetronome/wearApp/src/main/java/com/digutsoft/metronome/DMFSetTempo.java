@@ -27,14 +27,13 @@ public class DMFSetTempo extends Fragment {
 
     View rootView;
     DMCMetronome metronome;
-    SharedPreferences mSharedPreferences;
     TextView hostCount, hostTimeSig, hostTempo;
     CircledImageView hostReset;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
     // initialize values for textViews
     int mTempo = 120;
-    int mPeriod = 4;
+    static public int mPeriod = 4;
     int mCount = 1;
 
     int tapCount;
@@ -62,10 +61,6 @@ public class DMFSetTempo extends Fragment {
         hostTempo.setText(Integer.toString(mTempo));
 
         mContext = getActivity();
-        sharedPreferences = mContext.getSharedPreferences("dMetronome", 0);
-//        pref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mPeriod = sharedPreferences.getInt("count", 4);
-
 
         setTempo(120);
 
@@ -227,7 +222,6 @@ public class DMFSetTempo extends Fragment {
 
     private void setTempo(int tempo) {
         //we changed tempo max to 240
-        System.out.println(tempo);
         if (tempo < 0 || tempo > 9999) return;
 //        tvTempo.setText(Integer.toString(tempo));
 //        sbTempo.setProgress(tempo);
