@@ -5,11 +5,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.CircledImageView;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +31,7 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
-
-import java.sql.Time;
+import java.util.TimerTask;
 
 public class ClientTempo extends Fragment implements
         DataApi.DataListener,
@@ -49,9 +51,17 @@ public class ClientTempo extends Fragment implements
     // Client variable that will be set somewhere
     boolean isClient = true;
     private GoogleApiClient mGoogleApiClient;
+    boolean on = false;
 
     private static final String BPM_KEY = "com.example.key.BPM";
     private static final String TIME_KEY = "com.example.key.TIME";
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message message) {
+            Log.v("mytag", "handler is handling!");
+            metronome.startTick(mBpm);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,22 +105,11 @@ public class ClientTempo extends Fragment implements
         mBpm = 150;
         mStartTime = 0;
 
-        PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        //wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getString(R.string.app_name));
-
-        // This is the function that should recieve the message about the tempo and offset
-        // I'm not exactly sure how the message is recieved, but this https://developer.android.com/training/wearables/data-layer/messages.html
-        // says we implement a MessageListener Interface.
-        // One hacky way I thought of doing it is making the StartActivity path passed by the message
-        // actually hold the info of the tempo and offset value we need.
-        // You probably have a better idea but you are sleeping now :)
-
-        //tempo start was here
         triangle.setOnClickListener(new View.OnClickListener() {
-            boolean on = false;
+            //            boolean on = false;
             @Override
             public void onClick(View view) {
-                if (!on){
+                if (!on) {
                     on = true;
                     tvTempo.setText(Integer.toString(mBpm));
                     // start the metronome at the tempo and offset specified (offset will be implemented)
@@ -118,33 +117,26 @@ public class ClientTempo extends Fragment implements
                     // set the text to the tempo mark
                     tvTempo.setText(Integer.toString(mBpm));
 
-                }
-                else {
+                } else {
                     on = false;
                     metronome.stopTick();
                 }
             }
         });
-
         Toast.makeText(getActivity(), "JUST A TOAST", Toast.LENGTH_LONG).show();
-
         return rootView;
     }
 
-
     public void updateTempo(Long startTime, int tempo) {
-        setTempo(tempo);
-//        metronome.stopTick();
         mStartTime = startTime;
-//
-//        while(true) {
-//            if((System.currentTimeMillis() - startTime) % (tempo * 1000 / 60) == 0) {
-//                metronome.startTick(tempo);
-//            }
-//        }
-
+        setTempo(tempo);
+        long scheduledTime = (System.currentTimeMillis() - startTime) / tempo * 60000 / tempo + startTime;
+        Log.v("myTag", String.format("tick scheduled in %d", (scheduledTime - System.currentTimeMillis()) / 1000));
+        metronome.stopTick();
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(1), scheduledTime - System.currentTimeMillis());
     }
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
         metronome.stopTick();
@@ -155,16 +147,14 @@ public class ClientTempo extends Fragment implements
     private void setTempo(int tempo) {
         //we changed tempo max to 240
         if (tempo < 0 || tempo > 240) return;
-        tvTempo.setText(Integer.toString(tempo));
+        Log.v("mytag", "Tempo changed");
         mBpm = tempo;
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         Wearable.DataApi.addListener(mGoogleApiClient, this);
-
         Log.v("myTag", "Connected to phone");
-
         Toast.makeText(getActivity(), "Connected to Phone", Toast.LENGTH_LONG).show();
     }
 
@@ -188,8 +178,6 @@ public class ClientTempo extends Fragment implements
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     updateTempo(dataMap.getLong(TIME_KEY), dataMap.getInt(BPM_KEY));
                 }
-            } else if (event.getType() == DataEvent.TYPE_DELETED) {
-                // DataItem deleted
             }
         }
     }
@@ -209,5 +197,19 @@ public class ClientTempo extends Fragment implements
     public void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
+    }
+
+    private static class MyTimeTask extends TimerTask {
+        private final int bpm;
+        private final DMCMetronome metronome;
+
+        public MyTimeTask(int bpm, DMCMetronome metronome) {
+            this.bpm = bpm;
+            this.metronome = metronome;
+        }
+
+        public void run() {
+            metronome.startTick(bpm);
+        }
     }
 }

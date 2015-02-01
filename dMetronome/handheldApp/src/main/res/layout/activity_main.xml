@@ -25,6 +25,24 @@
             android:text="@string/disconnected" />
     </LinearLayout>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scan_btn"
+        android:text="@string/scan"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_btn"
+        android:text="send"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/watch"
+        android:text="watch"/>
+
     <LinearLayout
         android:id="@+id/host_section"
         android:layout_width="match_parent"
@@ -41,78 +59,6 @@
             android:id="@+id/client_listview"
             android:layout_width="fill_parent"
             android:layout_height="200dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/join_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/scan_btn"
-            android:text="@string/scan"/>
-
-        <ListView
-            android:id="@+id/host_listview"
-            android:layout_width="fill_parent"
-            android:layout_height="200dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="30dp" >
-
-        <Button
-            android:id="@+id/turnOn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/on" />
-
-        <Button
-            android:id="@+id/turnOff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/off" />
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="80dp" >
-
-        <Button
-            android:id="@+id/paired"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/List" />
-
-        <Button
-            android:id="@+id/send_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Send_message" />
-
-        <Button
-            android:id="@+id/search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Find" />
-
-        <ListView
-            android:id="@+id/listView1"
-            android:layout_width="fill_parent"
-            android:layout_height="200dp" >
-
-        </ListView>
-
     </LinearLayout>
 
 </LinearLayout>
