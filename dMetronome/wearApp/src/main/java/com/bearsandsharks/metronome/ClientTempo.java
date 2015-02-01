@@ -127,17 +127,20 @@ public class ClientTempo extends Fragment implements
             //            boolean on = false;
             @Override
             public void onClick(View view) {
-                if (!on) {
-                    on = true;
-                    tTempo.setText(Integer.toString(mBpm));
-                    // start the metronome at the tempo and offset specified (offset will be implemented)
-                    metronome.startTick(mBpm);
-                    // set the text to the tempo mark
-
-                } else {
-                    on = false;
-                    metronome.stopTick();
-                }
+                // start the metronome at same bpm from this point
+                metronome.stopTick();
+                metronome.startTick(mBpm);
+//                if (!on) {
+//                    on = true;
+//                    tTempo.setText(Integer.toString(mBpm));
+//                    // start the metronome at the tempo and offset specified (offset will be implemented)
+//                    metronome.startTick(mBpm);
+//                    // set the text to the tempo mark
+//
+//                } else {
+//                    on = false;
+//                    metronome.stopTick();
+//                }
             }
         });
         Toast.makeText(getActivity(), "JUST A TOAST", Toast.LENGTH_LONG).show();

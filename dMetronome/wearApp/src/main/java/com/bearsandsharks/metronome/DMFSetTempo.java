@@ -28,21 +28,20 @@ public class DMFSetTempo extends Fragment {
     View rootView;
     DMCMetronome metronome;
     TextView hostCount, hostTimeSig, hostTempo;
-    CircledImageView hostReset;
+    CircledImageView hostReset, miley;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
     // initialize values for textViews
     int mTempo = 120;
     static public int mPeriod = 4;
     int mCount = 1;
+    boolean on;
 
     int tapCount;
     long timeTotal, lastTap, currentTime;
     Context mContext;
     PowerManager.WakeLock wakeLock;
-    // Client variable that will be set somewhere
 
-//    SharedPreferences sharedPreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,12 +86,13 @@ public class DMFSetTempo extends Fragment {
         hostTimeSig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mPeriod == 9){
-                    mPeriod = 0;
+                if (!on) {
+                    if (mPeriod == 9) {
+                        mPeriod = 0;
+                    }
+                    mPeriod++;
+                    hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
                 }
-                mPeriod++;
-                hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
-
             }
         });
 
@@ -120,7 +120,10 @@ public class DMFSetTempo extends Fragment {
                     setTempo((60000 * (mPeriod - 1)) /total);
                     tapCount = mPeriod;
                     hostTempo.setText(Integer.toString((60000 * (mPeriod - 1)) /total));
+                    miley.setImageDrawable(getResources().getDrawable(R.drawable.red_circle));
                     metronome.startTick(mTempo);
+
+                    on = true;
                 }
             }
         });
@@ -128,92 +131,25 @@ public class DMFSetTempo extends Fragment {
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hostCount.setText(Integer.toString(1));
+                miley.setImageDrawable(getResources().getDrawable(R.drawable.tap));
                 onDestroy();
             }
         });
-
-
-
-
-
-//        sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-//                setTempo(i);
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//            }
-//        });
-
-//        btStart.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (mTempo == 0) {
-//                    Toast.makeText(getActivity(), R.string.tempo_zero, Toast.LENGTH_LONG).show();
-//                    return;
-//                }
-//
-//                //If it's running stop it, enable it, put tempo back on string, put image, and put arrow keys to visable
-//                if (DMCMetronome.mRunning) {
-//                    metronome.stopTick();
-//
-//                    sbTempo.setEnabled(true);
-//                    tvTempo.setText(Integer.toString(mTempo));
-//                    btStart.setImageDrawable(getResources().getDrawable(R.drawable.ic_start));
-//                    btStart.setCircleColor(getResources().getColor(R.color.green));
-//                    btPlus.setVisibility(View.VISIBLE);
-//                    btMinus.setVisibility(View.VISIBLE);
-//
-//                    wakeLock.release();
-//
-//                    notificationManager.cancel(1);
-//                } else {
-//                    //if not running start the tick, change visibility and stuff
-//                    metronome.startTick(mTempo);
-//
-//                    sbTempo.setEnabled(false);
-//                    btStart.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop));
-//                    btStart.setCircleColor(getResources().getColor(R.color.red));
-//                    btPlus.setVisibility(View.GONE);
-//                    btMinus.setVisibility(View.GONE);
-//
-//                    wakeLock.acquire();
-//
-//                    notificationBuilder.setContentText(String.format(getString(R.string.notification_running), mTempo));
-//                    notificationManager.notify(1, notificationBuilder.build());
-//                }
-//            }
-//        });
-
-//        btPlus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                setTempo(mTempo + 1);
-//            }
-//        });
-//
-//        btMinus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                setTempo(mTempo - 1);
-//            }
-//        });
 
         return rootView;
     }
 
 
     public void onDestroy() {
+
         super.onDestroy();
         metronome.stopTick();
         tapCount = 0;
         timeTotal = 0;
+
+        on = false;
+
 
         if (wakeLock.isHeld()) wakeLock.release();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -221,10 +157,7 @@ public class DMFSetTempo extends Fragment {
     }
 
     private void setTempo(int tempo) {
-        //we changed tempo max to 240
         if (tempo < 0 || tempo > 9999) return;
-//        tvTempo.setText(Integer.toString(tempo));
-//        sbTempo.setProgress(tempo);
         mTempo = tempo;
     }
 }
