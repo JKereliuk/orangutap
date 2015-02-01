@@ -31,7 +31,6 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
-import java.util.TimerTask;
 
 public class ClientTempo extends Fragment implements
         DataApi.DataListener,
@@ -110,19 +109,6 @@ public class ClientTempo extends Fragment implements
         Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         metronome = new DMCMetronome(getActivity(), vibrator, rootView.findViewById(R.id.CbilBackground));
 
-//        tTimeSig.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View view) {
-//                if(timeSig == 9) {
-//                    timeSig = 0;
-//                }
-//                timeSig++;
-//                tTimeSig.setText(Integer.toString(timeSig) + "/4");
-//            }
-//
-//        });
-
         triangle.setOnClickListener(new View.OnClickListener() {
             //            boolean on = false;
             @Override
@@ -153,7 +139,7 @@ public class ClientTempo extends Fragment implements
         tTempo.setText(Integer.toString(mBpm));
 
         setTempo(tempo);
-        long scheduledTime = (System.currentTimeMillis() - startTime) / tempo * 60000 / tempo + startTime;
+        long scheduledTime = (System.currentTimeMillis() - startTime) * (1 + tempo/60000) + startTime;
         Log.v("myTag", String.format("tick scheduled in %d", (scheduledTime - System.currentTimeMillis()) / 1000));
         metronome.stopTick();
         mHandler.sendMessageDelayed(mHandler.obtainMessage(1), scheduledTime - System.currentTimeMillis());
@@ -198,8 +184,13 @@ public class ClientTempo extends Fragment implements
                 // DataItem changed
                 DataItem item = event.getDataItem();
                 if (item.getUri().getPath().compareTo("/bpm") == 0) {
-                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    updateTempo(dataMap.getLong(TIME_KEY), dataMap.getInt(BPM_KEY));
+                    final DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateTempo(dataMap.getLong(TIME_KEY), dataMap.getInt(BPM_KEY));
+                        }
+                    });
                 }
             }
         }
@@ -220,19 +211,5 @@ public class ClientTempo extends Fragment implements
     public void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
-    }
-
-    private static class MyTimeTask extends TimerTask {
-        private final int bpm;
-        private final DMCMetronome metronome;
-
-        public MyTimeTask(int bpm, DMCMetronome metronome) {
-            this.bpm = bpm;
-            this.metronome = metronome;
-        }
-
-        public void run() {
-            metronome.startTick(bpm);
-        }
     }
 }

@@ -1,29 +1,36 @@
 package com.bearsandsharks.metronome;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.CircledImageView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.preference.PreferenceManager;
 
-import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 
-public class DMFSetTempo extends Fragment {
+public class DMFSetTempo extends Fragment
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+{
 
     View rootView;
     DMCMetronome metronome;
@@ -32,7 +39,7 @@ public class DMFSetTempo extends Fragment {
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
     // initialize values for textViews
-    int mTempo = 120;
+    int mBpm = 120;
     static public int mPeriod = 4;
     int mCount = 1;
     boolean on;
@@ -41,12 +48,25 @@ public class DMFSetTempo extends Fragment {
     long timeTotal, lastTap, currentTime;
     Context mContext;
     PowerManager.WakeLock wakeLock;
+    private GoogleApiClient mGoogleApiClient;
+    private long mStartTime;
+
+
+    private static final String BPM_KEY = "com.example.key.BPM";
+    private static final String TIME_KEY = "com.example.key.TIME";
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.host, container, false);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         CircledImageView reset = (CircledImageView) rootView.findViewById(R.id.Reset);
         final CircledImageView miley = (CircledImageView) rootView.findViewById(R.id.Miley);
@@ -57,7 +77,7 @@ public class DMFSetTempo extends Fragment {
 
         hostCount.setText(Integer.toString(mCount));
         hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
-        hostTempo.setText(Integer.toString(mTempo));
+        hostTempo.setText(Integer.toString(mBpm));
 
         mContext = getActivity();
 
@@ -121,9 +141,13 @@ public class DMFSetTempo extends Fragment {
                     tapCount = mPeriod;
                     hostTempo.setText(Integer.toString((60000 * (mPeriod - 1)) /total));
                     miley.setImageDrawable(getResources().getDrawable(R.drawable.red_circle));
-                    metronome.startTick(mTempo);
 
                     on = true;
+
+                    metronome.startTick(mBpm);
+                    mStartTime = System.currentTimeMillis();
+                    updatePhoneData();
+
                 }
             }
         });
@@ -158,6 +182,75 @@ public class DMFSetTempo extends Fragment {
 
     private void setTempo(int tempo) {
         if (tempo < 0 || tempo > 9999) return;
-        mTempo = tempo;
+//        tvTempo.setText(Integer.toString(tempo));
+//        sbTempo.setProgress(tempo);
+        mBpm = tempo;
+    }
+
+    public void updatePhoneData() {
+        // Create a DataMap object and send it to the data layer
+        DataMap dataMap = new DataMap();
+        dataMap.putLong(TIME_KEY, mStartTime);
+        dataMap.putInt(BPM_KEY, mBpm);
+        //Requires a new thread to avoid blocking the UI
+        new SendToDataLayerThread("/bpm", dataMap).start();
+        Toast.makeText(getActivity(), "Sent request to phone", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.v("myTag", "Connected to phone");
+        Toast.makeText(getActivity(), "Connected to Phone", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.v("myTag", "connection failed");
+    }
+
+    class SendToDataLayerThread extends Thread {
+        String path;
+        DataMap dataMap;
+
+        // Constructor for sending data objects to the data layer
+        SendToDataLayerThread(String p, DataMap data) {
+            path = p;
+            dataMap = data;
+        }
+
+        public void run() {
+            NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
+            for (Node node : nodes.getNodes()) {
+
+                // Construct a DataRequest and send over the data layer
+                PutDataMapRequest putDMR = PutDataMapRequest.create(path);
+                putDMR.getDataMap().putAll(dataMap);
+                PutDataRequest request = putDMR.asPutDataRequest();
+                DataApi.DataItemResult result = Wearable.DataApi.putDataItem(mGoogleApiClient,request).await();
+                if (result.getStatus().isSuccess()) {
+                    Log.v("myTag", "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
+                } else {
+                    // Log an error
+                    Log.v("myTag", "ERROR: failed to send DataMap");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
     }
 }

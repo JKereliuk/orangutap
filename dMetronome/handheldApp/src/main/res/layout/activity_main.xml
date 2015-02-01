@@ -14,51 +14,43 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/watch_status" />
+            android:text="@string/firebase_key" />
 
         <TextView
-            android:id="@+id/watch_status"
+            android:id="@+id/firebase_key"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:text="@string/disconnected" />
+            android:paddingLeft="@dimen/activity_horizontal_margin" />
     </LinearLayout>
 
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/scan_btn"
-        android:text="@string/scan"/>
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/join_btn"
+            android:text="@string/join"/>
+
+        <EditText
+            android:id="@+id/firebase_key_input"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content" />
+     </LinearLayout>
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/send_btn"
-        android:text="send"/>
+        android:id="@+id/host_btn"
+        android:text="Host"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/watch"
-        android:text="watch"/>
-
-    <LinearLayout
-        android:id="@+id/host_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <CheckBox
-            android:id="@+id/host_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/host"/>
-
-        <ListView
-            android:id="@+id/client_listview"
-            android:layout_width="fill_parent"
-            android:layout_height="200dp"/>
-    </LinearLayout>
+        android:text="Watch"/>
 
 </LinearLayout>
