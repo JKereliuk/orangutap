@@ -6,7 +6,7 @@ import android.support.wearable.view.GridViewPager;
 
 public class DMAMain extends Activity {
 
-    static public boolean isClient = false;
+    static public boolean isClient = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
