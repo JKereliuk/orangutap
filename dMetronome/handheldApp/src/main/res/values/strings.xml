@@ -10,11 +10,9 @@
     <string name="List">List paired Devices</string>
     <string name="Find">Search new Devices / Cancel</string>
     <string name="Send_message">Send Message</string>
-    <string name="watch_status">Watch Status:</string>
-    <string name="connected">Connected</string>
-    <string name="disconnected">Disconnected</string>
+    <string name="firebase_key">Firebase Key:</string>
     <string name="host">Host</string>
-    <string name="scan">Scan</string>
+    <string name="join">Join</string>
     <string name="none_paired">No Devices Paired</string>
     <string name="scanning">Scanning</string>
     <string name="select_device">Select Device</string>
