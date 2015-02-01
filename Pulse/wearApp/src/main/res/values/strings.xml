@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Pulse</string>
+    <string name="label">Metronome</string>
+    <string name="metronome_start">Start</string>
+    <string name="metronome_stop">Stop</string>
+    <string name="notification_running">Pulse is running. (%d bpm)</string>
+
+</resources>
