@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -41,9 +42,12 @@ public class MainActivity extends Activity implements
     private GoogleApiClient mGoogleApiClient;
     private int mBpm = 0;
     private Long mStartTime;
+    private String mAndroidId;
 
     private static final String BPM_KEY = "com.example.key.BPM";
     private static final String TIME_KEY = "com.example.key.TIME";
+    private static final String OWNER_KEY = "com.example.key.OWNER";
+
 
     private Firebase mFirebaseRef;
 
@@ -61,6 +65,9 @@ public class MainActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Firebase.setAndroidContext(this);
+
+        mAndroidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         mFirebaseRef = new Firebase("https://blazing-fire-4007.firebaseio.com/");
 
         setContentView(R.layout.activity_main);
@@ -106,6 +113,7 @@ public class MainActivity extends Activity implements
     private void updateWatchData() {
         // Create a DataMap object and send it to the data layer
         DataMap dataMap = new DataMap();
+        dataMap.putString(OWNER_KEY, mAndroidId);
         dataMap.putLong(TIME_KEY, mStartTime);
         dataMap.putInt(BPM_KEY, mBpm);
         //Requires a new thread to avoid blocking the UI
@@ -173,8 +181,10 @@ public class MainActivity extends Activity implements
                 if (item.getUri().getPath().compareTo("/bpm") == 0) {
                     Log.v("mytag", "Got new bpm from watch");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    updateBPM(dataMap.getLong(TIME_KEY), dataMap.getInt(BPM_KEY));
-                    hostFirebase();
+                    if(!dataMap.getString(OWNER_KEY).equals(mAndroidId)) {
+                        updateBPM(dataMap.getLong(TIME_KEY), dataMap.getInt(BPM_KEY));
+                        hostFirebase();
+                    }
                 }
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
