@@ -1,4 +1,4 @@
-package com.digutsoft.metronome;
+package com.bearsandsharks.metronome;
 
 import android.app.Fragment;
 import android.app.PendingIntent;

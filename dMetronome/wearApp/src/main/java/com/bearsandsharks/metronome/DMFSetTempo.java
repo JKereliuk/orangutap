@@ -1,4 +1,4 @@
-package com.digutsoft.metronome;
+package com.bearsandsharks.metronome;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -42,7 +42,7 @@ public class DMFSetTempo extends Fragment {
     PowerManager.WakeLock wakeLock;
     // Client variable that will be set somewhere
 
-    SharedPreferences sharedPreferences;
+//    SharedPreferences sharedPreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

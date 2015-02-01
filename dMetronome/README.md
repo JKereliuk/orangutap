@@ -1,11 +1,12 @@
-##[dMetronome](http://www.digutsoft.com/apps/product.php?id=metronome)
-==========
-dMetronome is developed by Digutsoft and DMMetronome.java file is a copy of [android-metronome](https://code.google.com/p/android-metronome/source/browse/trunk/src/org/coolfrood/mytronome/TickPlayer.java).
+# Orangutap Pulse
 
-dMetronome is a metronome app runs in Android Wear.
-It is an only metronome for Android Wear.
+Pulse is an Android metronome controlled by a smartwatch. The smartwatch acts as an interface and vibrates to the specified beat. In addition other android devices can connect and start vibrating in sync.
 
-Set BPM with slider, and set accurate BPM with buttons.
-After setting BPM, start metronome. Then, your watch will vibrate in the BPM.
+A UofTHacks project by team **Orangutap**. We are:
+* [Jacob Tsafatinos](https://github.com/jacobtsafatinos)
+* [Jonathan Kereliuk](https://github.com/jkereliuk) and
+* [Michael Kozakov](https://github.com/mkozakov)
 
-And also this is the first open-source project of [Digutsoft](http://www.digutsoft.com) and I'm not very good at using Git, so there can be lots of mistakes in Git. If you find them, please notice me! :D
+
+
+
