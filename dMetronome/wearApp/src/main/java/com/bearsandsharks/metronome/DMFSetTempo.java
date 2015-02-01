@@ -21,20 +21,19 @@ public class DMFSetTempo extends Fragment implements MetronomeFragment
     View rootView;
     DMCMetronome metronome;
     TextView hostCount, hostTimeSig, hostTempo;
-    CircledImageView hostReset;
+    CircledImageView hostReset, miley;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
     // initialize values for textViews
     static public int mPeriod = 4;
     int mCount = 1;
+    boolean on;
 
     int tapCount;
     long timeTotal, lastTap, currentTime;
     PowerManager.WakeLock wakeLock;
 
-    // Client variable that will be set somewhere
 
-//    SharedPreferences sharedPreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,12 +71,13 @@ public class DMFSetTempo extends Fragment implements MetronomeFragment
         hostTimeSig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mPeriod == 9){
-                    mPeriod = 0;
+                if (!on) {
+                    if (mPeriod == 9) {
+                        mPeriod = 0;
+                    }
+                    mPeriod++;
+                    hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
                 }
-                mPeriod++;
-                hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
-
             }
         });
 
@@ -116,6 +116,8 @@ public class DMFSetTempo extends Fragment implements MetronomeFragment
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hostCount.setText(Integer.toString(1));
+                miley.setImageDrawable(getResources().getDrawable(R.drawable.tap));
                 onDestroy();
             }
         });
@@ -125,14 +127,40 @@ public class DMFSetTempo extends Fragment implements MetronomeFragment
 
 
     public void onDestroy() {
+
         super.onDestroy();
         getMetronome().stopTick();
         tapCount = 0;
         timeTotal = 0;
+        on = false;
 
-//        if (wakeLock.isHeld()) wakeLock.release();
-//        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        notificationManager.cancel(1);
+
+        //if (wakeLock.isHeld()) wakeLock.release();
+        //getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //notificationManager.cancel(1);
+    }
+
+    private void setTempo(int tempo) {
+        if (tempo < 0 || tempo > 9999) return;
+//        tvTempo.setText(Integer.toString(tempo));
+//        sbTempo.setProgress(tempo);
+        mBpm = tempo;
+    }
+
+    public void updatePhoneData() {
+        // Create a DataMap object and send it to the data layer
+        DataMap dataMap = new DataMap();
+        dataMap.putLong(TIME_KEY, mStartTime);
+        dataMap.putInt(BPM_KEY, mBpm);
+        //Requires a new thread to avoid blocking the UI
+        new SendToDataLayerThread("/bpm", dataMap).start();
+        Toast.makeText(getActivity(), "Sent request to phone", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.v("myTag", "Connected to phone");
+        Toast.makeText(getActivity(), "Connected to Phone", Toast.LENGTH_LONG).show();
     }
 
     @Override
