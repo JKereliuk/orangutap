@@ -28,11 +28,15 @@ public class DMFSetTempo extends Fragment {
     View rootView;
     DMCMetronome metronome;
     SharedPreferences mSharedPreferences;
-    TextView tvTempo;
-    SeekBar sbTempo;
+    TextView hostCount, hostTimeSig, hostTempo;
+    CircledImageView hostReset;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
-    int mTempo, mPeriod;
+    // initialize values for textViews
+    int mTempo = 120;
+    int mPeriod = 4;
+    int mCount = 1;
+
     int tapCount;
     long timeTotal, lastTap, currentTime;
     Context mContext;
@@ -48,8 +52,14 @@ public class DMFSetTempo extends Fragment {
 
         CircledImageView reset = (CircledImageView) rootView.findViewById(R.id.Reset);
         final CircledImageView miley = (CircledImageView) rootView.findViewById(R.id.Miley);
-        // set the Triangle invisible
-//        triangle.setVisibility(View.GONE);
+
+        final TextView hostCount = (TextView) rootView.findViewById(R.id.Count);
+        final TextView hostTimeSig = (TextView) rootView.findViewById(R.id.TimeSig);
+        final TextView hostTempo = (TextView) rootView.findViewById(R.id.Tempo);
+
+        hostCount.setText(Integer.toString(mCount));
+        hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
+        hostTempo.setText(Integer.toString(mTempo));
 
         mContext = getActivity();
         sharedPreferences = mContext.getSharedPreferences("dMetronome", 0);
@@ -79,11 +89,21 @@ public class DMFSetTempo extends Fragment {
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getString(R.string.app_name));
 
+        hostTimeSig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mPeriod == 9){
+                    mPeriod = 0;
+                }
+                mPeriod++;
+                hostTimeSig.setText(Integer.toString(mPeriod) + "/4");
+
+            }
+        });
+
         miley.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("Ya");
-                System.out.println(mPeriod);
 
                 if(tapCount == 0) {
                     lastTap = System.currentTimeMillis();
@@ -99,12 +119,12 @@ public class DMFSetTempo extends Fragment {
                     currentTime = System.currentTimeMillis();
                     timeTotal += currentTime - lastTap;
                     lastTap = currentTime;
-                    System.out.println(timeTotal);
-                    System.out.println("HYZZZA");
+
                     int total = (int) timeTotal;
-                    System.out.println(total);
+
                     setTempo((60000 * (mPeriod - 1)) /total);
-                    tapCount = 5;
+                    tapCount = mPeriod;
+                    hostTempo.setText(Integer.toString((60000 * (mPeriod - 1)) /total));
                     metronome.startTick(mTempo);
                 }
             }

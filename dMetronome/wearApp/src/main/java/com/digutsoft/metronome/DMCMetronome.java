@@ -23,7 +23,7 @@ public class DMCMetronome {
     SharedPreferences mSharedPreferences;
 
     View mBackground;
-    TextView mTvTempo;
+    TextView tCount;
     Drawable mDefaultBackground;
 
     int mCount = 0;
@@ -39,7 +39,8 @@ public class DMCMetronome {
         mContext = context;
         mVibrator = vibrator;
         mBackground = view;
-        mTvTempo = (TextView) view.findViewById(R.id.tvTempo);
+        tCount = (TextView) view.findViewById(R.id.Count);
+//        tCount = ClientTempo.tCount;
         mDefaultBackground = view.getBackground();
         mSharedPreferences = context.getSharedPreferences("dMetronome", 0);
     }
@@ -53,10 +54,10 @@ public class DMCMetronome {
             mRunning = true;
             mCount = 0;
             //mPeriod is count default set to 4
-            mPeriod = mSharedPreferences.getInt("count", 4);
+            mPeriod = ClientTempo.timeSig;
             isFlashEnabled = mSharedPreferences.getBoolean("flash", true);
             alwaysOnStatus = mSharedPreferences.getBoolean("alwaysOn", false);
-            mTvTempo.setText(Integer.toString(1));
+            tCount.setText(Integer.toString(1));
 
             if (alwaysOnStatus) {
                 ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -75,14 +76,14 @@ public class DMCMetronome {
                 mCount = 0;
                 if(isFlashEnabled) {
                     mBackground.setBackgroundColor(Color.parseColor("#000000"));
-                    mTvTempo.setTextColor(Color.parseColor("#ffffff"));
+                    tCount.setTextColor(Color.parseColor("#ffffff"));
                 }
                     mVibrator.vibrate(120);
                 }
                 else {
                 if(isFlashEnabled) {
                     mBackground.setBackground(mDefaultBackground);
-                    mTvTempo.setTextColor(Color.parseColor("#ffffff"));
+                    tCount.setTextColor(Color.parseColor("#ffffff"));
                 }
                     mVibrator.vibrate(100);
                     }
@@ -97,7 +98,7 @@ public class DMCMetronome {
             mRunning = false;
             mCount = 0;
             mBackground.setBackground(mDefaultBackground);
-            mTvTempo.setTextColor(Color.parseColor("#000000"));
+            tCount.setTextColor(Color.parseColor("#000000"));
             //I think removeMessages means make MSG 0 or something???
             mHandler.removeMessages(MSG);
 
@@ -109,7 +110,7 @@ public class DMCMetronome {
             mRunning = false;
             mCount = 0;
             mBackground.setBackground(mDefaultBackground);
-            mTvTempo.setTextColor(Color.parseColor("#000000"));
+            tCount.setTextColor(Color.parseColor("#000000"));
             //I think removeMessages means make MSG 0 or something???
             mHandler.removeMessages(MSG);
 
@@ -123,7 +124,7 @@ public class DMCMetronome {
         public void handleMessage(Message message) {
             mCount++;
             tick();
-            mTvTempo.setText(Integer.toString(mCount + 1));
+            tCount.setText(Integer.toString(mCount + 1));
 
             //maybe do rotation animations here
         }

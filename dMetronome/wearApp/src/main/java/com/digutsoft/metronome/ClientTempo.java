@@ -40,10 +40,11 @@ public class ClientTempo extends Fragment implements
 
     View rootView;
     DMCMetronome metronome;
-    TextView tvTempo;
+    TextView tTempo, tTimeSig;
+    TextView tCount;
     NotificationCompat.Builder notificationBuilder;
     NotificationManagerCompat notificationManager;
-    int mBpm;
+    int mBpm = 120;
     long mStartTime;
     Context mContext;
     PowerManager.WakeLock wakeLock;
@@ -52,12 +53,21 @@ public class ClientTempo extends Fragment implements
     private GoogleApiClient mGoogleApiClient;
     boolean on = false;
 
+    // set default count to 1 and time sig to 4
+    int Count = 1;
+    static public int timeSig = 4;
+
     private static final String BPM_KEY = "com.example.key.BPM";
     private static final String TIME_KEY = "com.example.key.TIME";
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message message) {
             Log.v("mytag", "handler is handling!");
+
+            // this is mostly just for safety not sure if I need it
+            if(on) {
+                metronome.stopTick();
+            }
             metronome.startTick(mBpm);
         }
     };
@@ -65,9 +75,17 @@ public class ClientTempo extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.settempo, container, false);
+        rootView = inflater.inflate(R.layout.client, container, false);
 
-        tvTempo = (TextView) rootView.findViewById(R.id.tvTempoClient);
+        tTempo = (TextView) rootView.findViewById(R.id.Tempo);
+        tTimeSig = (TextView) rootView.findViewById(R.id.TimeSig);
+        tCount = (TextView) rootView.findViewById(R.id.Count);
+
+        // set initial values for tempo, timesig and count
+        tTempo.setText(Integer.toString(mBpm));
+        tTimeSig.setText(Integer.toString(4) + "/4");
+        tCount.setText(Integer.toString(Count));
+
 
         final CircledImageView triangle = (CircledImageView) rootView.findViewById(R.id.Triangle);
 
@@ -90,10 +108,20 @@ public class ClientTempo extends Fragment implements
         notificationManager = NotificationManagerCompat.from(getActivity());
 
         Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-        metronome = new DMCMetronome(getActivity(), vibrator, rootView.findViewById(R.id.bilBackground));
+        metronome = new DMCMetronome(getActivity(), vibrator, rootView.findViewById(R.id.CbilBackground));
 
-        mBpm = 150;
-        mStartTime = 0;
+//        tTimeSig.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View view) {
+//                if(timeSig == 9) {
+//                    timeSig = 0;
+//                }
+//                timeSig++;
+//                tTimeSig.setText(Integer.toString(timeSig) + "/4");
+//            }
+//
+//        });
 
         triangle.setOnClickListener(new View.OnClickListener() {
             //            boolean on = false;
@@ -101,11 +129,10 @@ public class ClientTempo extends Fragment implements
             public void onClick(View view) {
                 if (!on) {
                     on = true;
-                    tvTempo.setText(Integer.toString(mBpm));
+                    tTempo.setText(Integer.toString(mBpm));
                     // start the metronome at the tempo and offset specified (offset will be implemented)
                     metronome.startTick(mBpm);
                     // set the text to the tempo mark
-                    tvTempo.setText(Integer.toString(mBpm));
 
                 } else {
                     on = false;
@@ -119,6 +146,9 @@ public class ClientTempo extends Fragment implements
 
     public void updateTempo(Long startTime, int tempo) {
         mStartTime = startTime;
+        // set the tempo text to what the phone sent
+        tTempo.setText(Integer.toString(mBpm));
+
         setTempo(tempo);
         long scheduledTime = (System.currentTimeMillis() - startTime) / tempo * 60000 / tempo + startTime;
         Log.v("myTag", String.format("tick scheduled in %d", (scheduledTime - System.currentTimeMillis()) / 1000));
