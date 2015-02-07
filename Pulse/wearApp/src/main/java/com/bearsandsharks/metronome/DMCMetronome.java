@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.wearable.view.CircledImageView;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -109,7 +111,6 @@ public class DMCMetronome {
 //            }
     }
 
-
     private Handler mHandler = new Handler() {
         public void handleMessage(Message message) {
             mCount++;
@@ -118,4 +119,20 @@ public class DMCMetronome {
 
         }
     };
+
+    private Handler metronomeHandler = new Handler() {
+        public void handleMessage(Message message) {
+            Log.v("mytag", "handler is handling!");
+
+            // this is mostly just for safety not sure if I need it
+            Bundle data = message.getData();
+            int bpm = data.getInt("bpm");
+            stopTick();
+            startTick(bpm);
+        }
+    };
+
+    public Handler getHandler() {
+        return metronomeHandler;
+    }
 }
